@@ -1,13 +1,58 @@
 import React,{useState} from 'react'
-import { VStack,FormControl,FormLabel, Input, InputGroup,InputRightElement, Button } from '@chakra-ui/react'
+import axios from 'axios';
+import { VStack,FormControl,FormLabel, Input, InputGroup,InputRightElement, Button,Toast, useToast } from '@chakra-ui/react'
+import {useNavigate} from 'react-router-dom';
+
 
 const Login = () => {
 
     const [email,setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [show,setShow] = useState(false);
+    const [loading,setLoading] = useState(false);
+
     
+    //toast and navigate
+    const toast = useToast();
+    const navigate = useNavigate();
+
     const handleClick = () => setShow(!show);
+
+    const submitHandler = async() => {
+        setLoading(true);
+        if(!email || !password){
+            toast({
+                title: "Please Fill all the Fields",
+                status: "warning",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+            });
+            setLoading(false);
+            return;
+        }
+        try{
+            await axios.post('http://localhost:8070/api/user/login',{email,password}).then((res)=>{
+                console.log(res.data);
+                setLoading(false);
+                toast({
+                    title: "Login Successful",
+                    status: "success",
+                    duration: 5000,
+                    isClosable: true,
+                    position: "bottom",
+                });
+                localStorage.setItem("userInfo", JSON.stringify(res.data));
+                setLoading(false);
+                navigate('/chats');
+                
+            })
+        }catch(error){
+            setLoading(false);
+            console.log(error);
+        }
+    }
+
   return (
     <VStack>
          <FormControl id='email'>
@@ -27,21 +72,14 @@ const Login = () => {
                 </InputGroup>
             </FormControl>
 
-            <Button
+            <Button 
                 colorScheme='blue'
                 width={`100%`}
                 style={{marginTop:`15`}}
-                // onClick={submitHandler}
+                onClick={submitHandler}
             >Login</Button>
-
-            <Button
-                colorScheme='red'
-                width={`100%`}
-                style={{marginTop:`15`}}
-                // onClick={submitHandler}
-            >Create an Account</Button>
     </VStack>
   )
 }
 
-export default Login
+export default Login;
