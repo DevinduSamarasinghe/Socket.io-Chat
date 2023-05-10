@@ -3,7 +3,7 @@ import asyncHandler from 'express-async-handler';
 import { generateToken } from '../config/generateToken.js';
 import bcrypt from 'bcryptjs';
 
-export const registerUser = asyncHandler(async(req, res) => {
+export const registerUser = async(req, res) => {
 
     try{
 
@@ -41,7 +41,7 @@ export const registerUser = asyncHandler(async(req, res) => {
     }catch(error){
         res.status(400).json({message:"Reached the Catch Statement"});
     }
-})
+}
 
 export const authUser = async(req, res) => {
 
@@ -75,3 +75,17 @@ export const authUser = async(req, res) => {
     }
 
 }
+
+// api/user?
+export const allUsers = asyncHandler(async(req,res)=>{
+    const keyword = req.query.search ? {
+        $or: [  
+            {name: {$regex: req.query.search, $options: 'i'}},  //this searches patterns in both name and email according to the search query keyword we have
+            {email: {$regex: req.query.search, $options: 'i'}},
+            
+        ],
+    }: {};
+    const users = await User.find(keyword).find({_id: {$ne: req.user._id}})//$ne is used to find all the users except the current user
+    res.send(users);
+});
+
