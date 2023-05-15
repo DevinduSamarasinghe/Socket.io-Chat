@@ -6,7 +6,7 @@ export const connectDB = async ()=>{
         mongoose.connect(process.env.MONGODBURL);
         const connection = mongoose.connection;
 
-        connection.once("open",()=>console.log("MongoDB SocketIo Database connected Successfully"));
+        connection.once("open",()=>console.log("MongoDB Database connected Successfully"));
     }catch(error){
         console.log(error)
     }

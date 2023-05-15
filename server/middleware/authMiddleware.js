@@ -10,7 +10,7 @@ export const protect = asyncHandler(async(req, res, next) => {
     let token;  //This is the token that is sent in the header
 
     if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){    //if the token is present and it starts with the bearer means it has the specific token
-        console.log("Authorization Header: ",req.headers.authorization);
+        //console.log("Authorization Header: ",req.headers.authorization);
 
 
         try{

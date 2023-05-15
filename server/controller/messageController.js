@@ -28,9 +28,6 @@ export const sendMessage = async(req,res)=>{
         //Updating the latest message of the chat by the newly created message now
         await Chat.findByIdAndUpdate(req.body.chatId, {latestMessage: message});
         res.json(message);
-
-
-
     }catch(error){
         res.status(400);
         throw new Error("Error at Catch: " + error.message );

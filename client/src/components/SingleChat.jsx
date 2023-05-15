@@ -1,7 +1,11 @@
+//package and hooks imports
 import React, { useState, useEffect } from "react";
-import { ChatState } from "../contexts/ChatProvider";
 import axios from "axios";
 
+//State Imports
+import { ChatState } from "../contexts/ChatProvider";
+
+//UI Imports
 import { ArrowBackIcon } from "@chakra-ui/icons";
 import {
   Box,
@@ -12,50 +16,35 @@ import {
   Input,
 } from "@chakra-ui/react";
 import { useToast } from "@chakra-ui/react";
+import "./styles.css";
+
+//config imports
 import { getSender, getSenderFull } from "../config/ChatLogics";
 
+//component imports
 import ScrollableChat from "./ScrollableChat";
 import ProfileModal from "./ProfileModal";
 
-import "./styles.css";
+//socket client import
+import io from "socket.io-client";
+
+//socket configuration 
+const ENDPOINT = 'http://localhost:8070'; //For now the local variable will be 8070
+var socket, selectedChatCompare;
 
 const SingleChat = ({ fetchAgain, setFetchAgain }) => {
 
+
   const toast = useToast();
+
+
   const { user, selectedChat, setSelectedChat } = ChatState();
-  console.log("Logged User: ", user);
 
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
   const [istyping, setIsTyping] = useState(true);
-
-  const sendMessage = async(e) => {
-    if(e.key === "Enter" && newMessage){
-        try{
-            const config = {
-                headers: {
-                    "Content-Type": "application/json",
-                    Authorization: `Bearer ${user.token}`,
-                }
-            }
-            setNewMessage("");
-            const {data} = await axios.post(`http://localhost:8070/api/message`,{content: newMessage, chatId: selectedChat._id},config);
-            console.log(data);
-             //Resets the message
-            setMessages([...messages,data]);
-        }catch(error){
-            toast({
-                title: "Error Occured!",
-                description: "Failed to send the Message",
-                status: "error",
-                duration: 5000,
-                isClosable: true,
-                position: "bottom",
-              });
-        }
-    }
-  };
+  const [socketConnected, setSocketConnected] = useState(false);
 
   const fetchMessages = async () => {
     if(!selectedChat) return;
@@ -73,6 +62,10 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         console.log("Messages of this chat: ", messages);
         setMessages(data);
         setLoading(false);
+
+        //Passing the selectedChatID for the room to be created
+        socket.emit('join chat', selectedChat._id); //So the chat users can join the socket ID
+
     }catch(error){
         toast({
             title: "Error Occured!",
@@ -85,11 +78,61 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     }
   }
 
+  const sendMessage = async(e) => {
+    if(e.key === "Enter" && newMessage){
+        try{
+            const config = {
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${user.token}`,
+                }
+            }
+            setNewMessage("");
+            const {data} = await axios.post(`http://localhost:8070/api/message`,{content: newMessage, chatId: selectedChat._id},config);
+            console.log(data);
+
+            socket.emit("new message",data);
+            setMessages([...messages,data]);
+        }catch(error){
+            toast({
+                title: "Error Occured!",
+                description: "Failed to send the Message",
+                status: "error",
+                duration: 5000,
+                isClosable: true,
+                position: "bottom",
+              });
+        }
+    }
+  };
+
+  //UseEffect to initiate the connection to the socket
+  useEffect(()=>{
+    socket = io(ENDPOINT);  //establishes the connection
+    socket.emit("setup",user.user); //Setting up the socket by passing the user
+    socket.on('connected', ()=> setSocketConnected(true));
+  },[])
+
   useEffect(()=>{
     fetchMessages();
+
+    selectedChatCompare = selectedChat; //Just to keep a backup of the state of selectedChat, if we are to omit or send a notification
   },[selectedChat])
 
+  useEffect(()=>{
+    socket.on("Message received", (newMessageReceived)=>{
+      if(!selectedChatCompare || selectedChatCompare._id !== newMessageReceived.chat._id){
+        //give notification
+        console.log("Hello")
+      }else{
+        setMessages([...messages,newMessageReceived]);
+      }
+    })
+  })
+
   const typingHandler = (e) => {setNewMessage(e.target.value);};
+
+
     
   return (
     <>
@@ -146,18 +189,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
             )}
 
             <FormControl onKeyDown={sendMessage} id="first-name" isRequired>
-              {/* {istyping ? (
-                <div>
-                  <Lottie
-                    options={defaultOptions}
-                    // height={50}
-                    width={70}
-                    style={{ marginBottom: 15, marginLeft: 0 }}
-                  />
-                </div>
-              ) : (
-                <></>
-              )} */}
               <Input
                 variant="filled"
                 bg="#E0E0E0"
