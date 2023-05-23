@@ -48,6 +48,8 @@ const Signup = () => {
     }
     console.log(name, email, password, pic);
     try {
+    //Currently the API is not authenticated.
+
     //   const config = {
     //     headers: {
     //       "Content-type": "application/json",

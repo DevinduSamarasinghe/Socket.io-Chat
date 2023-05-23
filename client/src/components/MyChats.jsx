@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { ChatState } from '../contexts/ChatProvider';
 import { useToast } from "@chakra-ui/react";
-import { Box, Stack, Text, Button } from "@chakra-ui/react";
+import { Box, Stack, Text} from "@chakra-ui/react";
 
 import axios from "axios";
 
@@ -9,12 +9,17 @@ import ChatLoading from './ChatLoading';
 import { getSender } from '../config/ChatLogics';
 
 
-const MyChats = ({fetchAgain}) => {
+const MyChats = () => {
   const { selectedChat, setSelectedChat, user, chats, setChats } = ChatState();
   const [loggedUser, setLoggedUser] = useState();
-
+  useEffect(() => {
+    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
+    fetchChats();
+  }, []);
 
   const Toast = useToast();
+
+ 
 
   const fetchChats = async () => {
     try {
@@ -39,10 +44,6 @@ const MyChats = ({fetchAgain}) => {
     }
   };
 
-  useEffect(() => {
-    setLoggedUser(JSON.parse(localStorage.getItem("userInfo")));
-    fetchChats();
-  }, [fetchAgain]);
 
   return (
     <Box
@@ -66,15 +67,6 @@ const MyChats = ({fetchAgain}) => {
         alignItems="center"
       >
         My Chats
-        {/* <GroupChatModal>
-        <Button
-          d="flex"
-          fontSize={{ base: "17px", md: "10px", lg: "17px" }}
-          rightIcon={<AddIcon />}
-        >
-          
-        </Button>
-      </GroupChatModal> */}
       </Box>
       <Box
         display="flex"
@@ -99,13 +91,8 @@ const MyChats = ({fetchAgain}) => {
                 borderRadius="lg"
                 key={chat._id}
               >
-                {/* <Text>
-                {!chat.isGroupChat
-                  ? getSender(loggedUser, chat.users)
-                  : chat.chatName}
-              </Text> */}
               <Text>
-                {getSender(loggedUser.user, chat.users)}
+                {loggedUser && (getSender(loggedUser.user, chat.users))}
               </Text>
                 {chat.latestMessage && (
                   <Text fontSize="xs">
