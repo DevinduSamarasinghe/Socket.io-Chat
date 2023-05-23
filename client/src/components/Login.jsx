@@ -18,7 +18,7 @@ const Login = () => {
 
     const handleClick = () => setShow(!show);
 
-    const submitHandler = async () => {
+    const submitHandler = () => {
         setLoading(true);
         if (!email || !password) {
             toast({
@@ -32,7 +32,7 @@ const Login = () => {
             return;
         }
         try {
-            await axios.post('http://localhost:8070/api/user/login', { email, password }).then((res) => {
+             axios.post('http://localhost:8070/api/user/login', { email, password }).then((res) => {
                 console.log(res.data);
                 setLoading(false);
                 toast({
@@ -43,6 +43,7 @@ const Login = () => {
                     position: "bottom",
                 });
                 localStorage.setItem("userInfo", JSON.stringify(res.data));
+                //console.log(localStorage.getItem("userInfo"));
                 setLoading(false);
                 navigate('/chats');
 

@@ -32,7 +32,7 @@ import io from "socket.io-client";
 const ENDPOINT = 'http://localhost:8070'; //For now the local variable will be 8070
 var socket, selectedChatCompare;
 
-const SingleChat = ({ fetchAgain, setFetchAgain }) => {
+const SingleChat = () => {
 
 
   const toast = useToast();
@@ -43,7 +43,6 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const [messages, setMessages] = useState([]);
   const [loading, setLoading] = useState(false);
   const [newMessage, setNewMessage] = useState("");
-  const [istyping, setIsTyping] = useState(true);
   const [socketConnected, setSocketConnected] = useState(false);
 
   const fetchMessages = async () => {
