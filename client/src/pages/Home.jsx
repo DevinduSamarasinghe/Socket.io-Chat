@@ -11,7 +11,7 @@ import {
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
-
+import img from "../data/Remedial.png";
 import Signup from "../components/Signup";
 import Login from "../components/Login";
 
@@ -30,7 +30,7 @@ function Homepage() {
   return (
     <Container maxW="xl" centerContent>
       <Box
-        d="flex"
+        display="flex"
         justifyContent="center"
         p={3}
         bg="white"
@@ -40,7 +40,11 @@ function Homepage() {
         borderWidth="1px"
       >
         <Text fontSize="4xl" fontFamily="Work sans">
-          Remedial Space
+          <div>
+          <img src = {img}>
+          </img>
+          </div>
+
         </Text>
       </Box>
       <Box bg="white" w="100%" p={4} borderRadius="lg" borderWidth="1px">

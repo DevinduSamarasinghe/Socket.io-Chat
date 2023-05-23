@@ -71,9 +71,9 @@ io.on("connection",(socket)=>{
             socket.in(user._id).emit("Message received", newMessageReceived);
             console.log("Message sent to: ",user._id);
         }));
-    })
+    });
 
- })
+ });
 
 
 

@@ -7,7 +7,7 @@ import { Avatar } from "@chakra-ui/avatar";
 import { ChatState } from "../contexts/ChatProvider";
 import { useDisclosure } from "@chakra-ui/react";
 
-import img from "../data/RemedialSpaces.png";
+import img from "../data/Remedial.png";
 
 import axios from "axios";
 
@@ -128,12 +128,14 @@ const SideDrawer = () => {
                     </Text>
                 </Button>
             </Tooltip>
-            <img
-                src="https://firebasestorage.googleapis.com/v0/b/herstory-6a3c0.appspot.com/o/logo-no-background.png?alt=media&token=08cba1bc-5127-4a4a-8ea6-75cf010b01b1"
-                alt="herstory logo"
+            {/* <img
+                src= {img}
+                alt={'Remedial'}
                 className="w-[200px] my-10" style={{ width: "200px",
                marginTop: "10px", marginBottom: "10px" , flex: "true"}}
-            />
+            /> */}
+
+            <h2>Remedial Space</h2>
             <div>
           <Menu>
             <MenuButton p={1}>
